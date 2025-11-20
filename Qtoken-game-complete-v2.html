@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🪙 가치 토큰 GAME</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        /* 레벨 카드 */
+        .level-card {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            text-align: center;
+            color: white;
+        }
+
+        .level-emoji {
+            font-size: 4em;
+            margin: 20px 0;
+        }
+
+        .level-name {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .level-progress {
+            background: rgba(255,255,255,0.3);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .level-progress-bar {
+            height: 100%;
+            background: white;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fda085;
+        }
+
+        /* 토큰 발행 */
+        .token-form {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        .amount-btns {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .amount-btn {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .amount-btn:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .amount-btn.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 받기 대기 */
+        .pending-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .pending-amount {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .receive-btn {
+            width: 100%;
+            padding: 20px;
+            background: white;
+            color: #f5576c;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .receive-btn:hover {
+            background: #fff5f7;
+        }
+
+        .receive-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 통계 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* 피드 */
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .activity-time {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        /* 팝업 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* 초기화 버튼 */
+        .reset-btn {
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 20px;
+        }
+
+        /* 사용자 선택 화면 스타일 */
+        .user-selection-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .user-selection-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .user-selection-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .user-selection-title h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .user-selection-title p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .user-selection-subtitle {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .user-list {
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .user-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            text-align: center;
+            min-height: 100px;
+        }
+
+        .user-option:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .user-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .user-option.selected .user-option-name,
+        .user-option.selected .user-option-product {
+            color: white;
+        }
+
+        .user-option input[type="radio"] {
+            display: none;
+        }
+
+        .user-option-name {
+            font-weight: 700;
+            font-size: 1.3em;
+            margin-bottom: 8px;
+        }
+
+        .user-option-product {
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 1024px) {
+            .user-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .user-list {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .user-option {
+                padding: 15px 8px;
+                min-height: 90px;
+            }
+            
+            .user-option-name {
+                font-size: 1.1em;
+            }
+            
+            .user-option-product {
+                font-size: 0.75em;
+            }
+        }
+
+        .start-game-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .start-game-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .start-game-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 메인 게임 화면 숨김 */
+        .main-game-screen {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .user-selection-card {
+                padding: 30px 20px;
+            }
+            
+            .user-selection-title h1 {
+                font-size: 2em;
+            }
+            
+            .user-selection-subtitle {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 사용자 선택 화면 -->
+    <div class="user-selection-screen" id="userSelectionScreen">
+        <div class="user-selection-card">
+            <div class="user-selection-title">
+                <h1>🪙 가치 토큰 GAME</h1>
+                <p>1:1 기여 기반 코칭 토큰 시스템</p>
+            </div>
+            
+            <div class="user-selection-subtitle">
+                Let's Go ~ 로그인?
+            </div>
+            
+            <div class="user-list">
+                <label class="user-option">
+                    <input type="radio" name="selectedUser" value="taewook">
+                    <div class="user-option-name">태욱</div>
+                    <div class="user-option-product">비즈니스 실행</div>
+                </label>
+                
+                <label class="user-option">
+                    <input type="radio" name="selectedUser" value="dowan">
+                    <div class="user-option-name">도완</div>
+                    <div class="user-option-product">유튜브 컨설팅</div>
+                </label>
+                
+                <label class="user-option">
+                    <input type="radio" name="selectedUser" value="hayeon">
+                    <div class="user-option-name">하연</div>
+                    <div class="user-option-product">라이프사이클</div>
+                </label>
+                
+                <label class="user-option">
+                    <input type="radio" name="selectedUser" value="euna">
+                    <div class="user-option-name">은아</div>
+                    <div class="user-option-product">자본주의 머니</div>
+                </label>
+                
+                <label class="user-option">
+                    <input type="radio" name="selectedUser" value="ray">
+                    <div class="user-option-name">래이</div>
+                    <div class="user-option-product">우주머니액팅</div>
+                </label>
+                
+                <label class="user-option">
+                    <input type="radio" name="selectedUser" value="saerom">
+                    <div class="user-option-name">새롬</div>
+                    <div class="user-option-product">CRM 개발</div>
+                </label>
+                
+                <label class="user-option">
+                    <input type="radio" name="selectedUser" value="jieun">
+                    <div class="user-option-name">지은</div>
+                    <div class="user-option-product">닐스 기획</div>
+                </label>
+                
+                <label class="user-option">
+                    <input type="radio" name="selectedUser" value="jinseul">
+                    <div class="user-option-name">진슬</div>
+                    <div class="user-option-product">스레드 분석기</div>
+                </label>
+            </div>
+            
+            <button class="start-game-btn" id="startGameBtn" disabled>시작하기</button>
+        </div>
+    </div>
+
+    <!-- 메인 게임 화면 -->
+    <div class="main-game-screen" id="mainGameScreen">
+    <div class="container">
+        <div class="header">
+            <h1>🪙 가치 토큰 GAME</h1>
+            <p>1:1 기여 기반 코칭 토큰 시스템</p>
+        </div>
+
+        <!-- 게임 설명 -->
+        <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);">
+            <h2 style="text-align: center; margin-bottom: 20px;">📖 게임 방법</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3em; margin-bottom: 10px;">🎁</div>
+                    <h3 style="color: #667eea; margin-bottom: 10px;">1. 가치 인정하기</h3>
+                    <p style="color: #666; line-height: 1.6;">
+                        동료의 가치를 토큰으로 인정합니다.<br>
+                        받은 것의 가치를 숫자로 표현하며<br>
+                        감사를 구체화하는 연습입니다.
+                    </p>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3em; margin-bottom: 10px;">💰</div>
+                    <h3 style="color: #667eea; margin-bottom: 10px;">2. 받기 대기</h3>
+                    <p style="color: #666; line-height: 1.6;">
+                        동료들이 인정해준 나의 가치가<br>
+                        여기 쌓입니다.<br>
+                        아직 내가 받지 않은 것들입니다.
+                    </p>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3em; margin-bottom: 10px;">🙏</div>
+                    <h3 style="color: #667eea; margin-bottom: 10px;">3. 감사하며 받기</h3>
+                    <p style="color: #666; line-height: 1.6;">
+                        이것이 진짜 받기입니다.<br>
+                        내 가치를 내가 인정하고<br>
+                        감사하며 받아들이는 순간입니다.
+                    </p>
+                </div>
+            </div>
+            <div style="background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%); padding: 25px; border-radius: 15px; margin-top: 20px; border-left: 5px solid #ff8c00; box-shadow: 0 2px 10px rgba(255,140,0,0.1);">
+                <div style="font-size: 1.3em; margin-bottom: 15px;">
+                    <strong style="color: #ff8c00;">💫 게임의 진짜 의도</strong>
+                </div>
+                <p style="color: #555; line-height: 1.8; font-size: 1.05em; margin: 0;">
+                    우리는 주는 데는 익숙하지만, 받는 데는 서툽니다.<br>
+                    "이 정도로 돈을 받아도 되나?" 하는 의심이 가격을 낮춥니다.<br><br>
+                    이 게임은 <strong style="color: #ff8c00;">받기를 연습</strong>하는 공간입니다.<br>
+                    받기 대기 금액이 쌓이면 → [🙏 감사하며 받기]를 누르고 → 감사 메시지를 선택하며 → 
+                    <strong style="color: #ff8c00;">내 가치를 내가 인정</strong>하는 순간을 경험하세요.<br><br>
+                    서로 기여하며 가치를 높이는 과정에서, 게임은 1,000만원까지 설정되어 있습니다.<br>
+                    이 과정에서 내가 제공하는 가치를 스스로 인정하게 되며,<br>
+                    자연스럽고 당당하게 런칭하게 됩니다. 🚀
+                </p>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- 레벨 & 받기 대기 -->
+            <div>
+                <div class="card level-card">
+                    <div class="level-emoji" id="levelEmoji">🌱</div>
+                    <div class="level-name" id="levelName">새싹 코치</div>
+                    <div>Lv.<span id="levelNum">1</span></div>
+                    <div class="level-progress">
+                        <div class="level-progress-bar" id="levelProgress">0%</div>
+                    </div>
+                    <div id="levelNext">다음 레벨까지 100만</div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 10px; font-size: 0.9em; text-align: left;">
+                        <div style="font-weight: 600; margin-bottom: 10px; text-align: center;">📊 레벨 구간</div>
+                        <div style="line-height: 1.8;">
+                            🌱 Lv.1: 0~100만<br>
+                            🌿 Lv.2: 100~300만<br>
+                            🌳 Lv.3: 300~500만<br>
+                            💼 Lv.4: 500~1,000만<br>
+                            👑 Lv.5: 1,000만 달성!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card pending-card" style="margin-top: 20px;">
+                    <h2 style="color: white;">💰 받기 대기</h2>
+                    <div class="pending-amount" id="pendingAmount">0만원</div>
+                    <p>승인을 기다리는 중입니다</p>
+                    <button class="receive-btn" id="receiveBtn" onclick="showReceiveConfirm()" disabled>
+                        🙏 감사하며 받기
+                    </button>
+                </div>
+            </div>
+
+            <!-- 가치 인정하기 -->
+            <div class="card">
+                <h2>🎁 가치 인정하기</h2>
+                <form class="token-form" onsubmit="issueToken(event)">
+                    <div class="form-group">
+                        <label>누구의 가치를 인정하시나요?</label>
+                        <select id="personSelect">
+                            <option value="">선택하세요</option>
+                            <option value="태욱">태욱 - 비즈니스 실행 코칭</option>
+                            <option value="도완">도완 - 유튜브 컨설팅 코칭</option>
+                            <option value="하연">하연 - 라이프사이클 코칭</option>
+                            <option value="은아">은아 - 자본주의 머니 코칭</option>
+                            <option value="래이">래이 - 우주머니액팅 코칭</option>
+                            <option value="새롬">새롬 - CRM 개발 코칭</option>
+                            <option value="지은">지은 - 닐스 기획 코칭</option>
+                            <option value="진슬">진슬 - 스레드 분석기 코칭</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>금액 선택 (만원)</label>
+                        <div class="amount-btns">
+                            <button type="button" class="amount-btn" onclick="selectAmount(1)">1만</button>
+                            <button type="button" class="amount-btn" onclick="selectAmount(3)">3만</button>
+                            <button type="button" class="amount-btn" onclick="selectAmount(5)">5만</button>
+                            <button type="button" class="amount-btn" onclick="selectAmount(7)">7만</button>
+                            <button type="button" class="amount-btn" onclick="selectAmount(10)">10만</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #667eea; font-size: 1.1em;">💰 또는 직접 입력 (1건당 최대 10만원)</label>
+                        <input type="number" id="customAmount" min="1" max="10" placeholder="금액 입력 (예: 7)" style="font-size: 1.1em; padding: 15px;">
+                    </div>
+
+                    <button type="submit" class="submit-btn">🪙 가치 인정하기</button>
+                </form>
+
+                <div style="margin-top: 30px;">
+                    <h2>📊 받은 가치 통계</h2>
+                    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 15px;">
+                        <div class="stat-card">
+                            <div class="stat-label">📅 오늘</div>
+                            <div class="stat-value" id="dailyReceived">0만</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">📆 이번주</div>
+                            <div class="stat-value" id="weeklyReceived">0만</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">🏆 시즌 누적</div>
+                            <div class="stat-value" id="receivedTotal">0만</div>
+                        </div>
+                    </div>
+                    
+                    <h2 style="margin-top: 30px;">🎯 이번주 미션</h2>
+                    <div style="background: #f0f7ff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea;">
+                        <p style="color: #667eea; font-size: 0.95em; margin: 0; line-height: 1.6;">
+                            <strong>기준:</strong> 일평균 7만원 × 7일 = 주 50만원 | 주 50만원 × 16주 = 시즌 800만원<br>
+                            꾸준히 하면 1,000만원 달성할 수 있습니다!
+                        </p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
+                        <div style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-weight: 600;">📅 일일 최소 목표: 7만원</span>
+                                <span id="dailyStatus" style="font-weight: 600;">미달성</span>
+                            </div>
+                            <div style="background: #e0e0e0; height: 10px; border-radius: 5px; overflow: hidden;">
+                                <div id="dailyProgress" style="width: 0%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: width 0.5s;"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-weight: 600;">📆 주간 최소 목표: 50만원</span>
+                                <span id="weeklyStatus" style="font-weight: 600;">미달성</span>
+                            </div>
+                            <div style="background: #e0e0e0; height: 10px; border-radius: 5px; overflow: hidden;">
+                                <div id="weeklyProgress" style="width: 0%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: width 0.5s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2 style="margin-top: 30px;">💝 인정한 가치</h2>
+                    <div class="stat-card">
+                        <div class="stat-label">총 인정한 가치</div>
+                        <div class="stat-value" id="givenTotal">0만</div>
+                    </div>
+                </div>
+
+                <button class="reset-btn" onclick="resetAll()">🔄 전체 초기화</button>
+            </div>
+
+            <!-- 실시간 활동 -->
+            <div class="card">
+                <h2>🎊 실시간 활동</h2>
+                <div class="activity-feed" id="activityFeed">
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        아직 활동이 없습니다
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 데이터 구조
+        const data = {
+            pending: 0,      // 받기 대기
+            received: 0,     // 받기 완료 (시즌 누적)
+            given: 0,        // 인정한 가치
+            dailyReceived: 0,  // 오늘 받은 것
+            weeklyReceived: 0, // 이번주 받은 것
+            lastResetDate: null,  // 마지막 리셋 날짜
+            lastWeekReset: null,  // 마지막 주간 리셋
+            activities: []
+        };
+
+        const levels = [
+            { threshold: 0, name: '새싹 코치', emoji: '🌱', level: 1 },
+            { threshold: 100, name: '성장 코치', emoji: '🌿', level: 2 },
+            { threshold: 300, name: '숙련 코치', emoji: '🌳', level: 3 },
+            { threshold: 500, name: '전문 코치', emoji: '💼', level: 4 },
+            { threshold: 1000, name: '마스터 코치', emoji: '👑', level: 5 }
+        ];
+
+        let selectedAmount = 0;
+
+        // 데이터 저장
+        function saveData() {
+            localStorage.setItem('tokenGame', JSON.stringify(data));
+        }
+
+        // 데이터 로드
+        function loadData() {
+            const saved = localStorage.getItem('tokenGame');
+            if (saved) {
+                Object.assign(data, JSON.parse(saved));
+            }
+            checkDailyReset();
+            checkWeeklyReset();
+            updateUI();
+        }
+
+        // 일일 리셋 체크
+        function checkDailyReset() {
+            const today = new Date().toDateString();
+            if (data.lastResetDate !== today) {
+                data.dailyReceived = 0;
+                data.lastResetDate = today;
+                saveData();
+            }
+        }
+
+        // 주간 리셋 체크 (월요일 기준)
+        function checkWeeklyReset() {
+            const now = new Date();
+            const dayOfWeek = now.getDay(); // 0=일요일
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // 월요일
+            startOfWeek.setHours(0, 0, 0, 0);
+            const weekKey = startOfWeek.toISOString().split('T')[0];
+            
+            if (data.lastWeekReset !== weekKey) {
+                data.weeklyReceived = 0;
+                data.lastWeekReset = weekKey;
+                saveData();
+            }
+        }
+
+        // 금액 선택
+        function selectAmount(amount) {
+            selectedAmount = amount;
+            document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('customAmount').value = '';
+        }
+
+        // 토큰 발행 (가치 인정)
+        function issueToken(event) {
+            event.preventDefault();
+            
+            const person = document.getElementById('personSelect').value;
+            const customAmount = parseInt(document.getElementById('customAmount').value) || 0;
+            const amount = customAmount || selectedAmount;
+
+            if (!person) {
+                alert('사람을 선택해주세요!');
+                return;
+            }
+
+            if (amount < 1) {
+                alert('금액을 입력해주세요!');
+                return;
+            }
+
+            // 1건당 10만원 상한
+            if (amount > 10) {
+                alert('1건당 최대 10만원까지 발행할 수 있습니다!');
+                return;
+            }
+
+            // 가치 인정 (pending 증가)
+            data.pending += amount;
+            data.given += amount;
+            
+            // 활동 기록
+            addActivity(`${person}님에게 ${amount}만원 가치 인정!`);
+            
+            saveData();
+            updateUI();
+            
+            // 폼 초기화
+            document.getElementById('personSelect').value = '';
+            document.getElementById('customAmount').value = '';
+            selectedAmount = 0;
+            document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('selected'));
+            
+            alert(`${person}님에게 ${amount}만원 가치 인정 완료! 🎉`);
+        }
+
+        // 받기 확인 팝업
+        function showReceiveConfirm() {
+            if (data.pending === 0) return;
+            
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s;
+            `;
+
+            popup.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 40px;
+                    border-radius: 20px;
+                    max-width: 550px;
+                    text-align: center;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                    animation: slideUp 0.3s;
+                ">
+                    <div style="font-size: 3em; margin-bottom: 20px;">🎊</div>
+                    <h2 style="color: #667eea; margin-bottom: 10px;">가치 수령!</h2>
+                    <p style="font-size: 1.5em; color: #333; margin-bottom: 30px;">
+                        <strong style="color: #764ba2;">${data.pending}만원</strong>을<br>
+                        받으시겠습니까?
+                    </p>
+                    
+                    <div style="text-align: left; margin-bottom: 25px;">
+                        <p style="font-weight: 600; color: #667eea; margin-bottom: 15px; font-size: 1.1em;">
+                            💬 감사 메시지를 선택하세요:
+                        </p>
+                        
+                        <label style="display: block; padding: 15px; margin-bottom: 10px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer;">
+                            <input type="radio" name="gratitude" value="내 코칭 가치 인정 감사합니다" style="margin-right: 10px;">
+                            <span>내 코칭 가치 인정 감사합니다</span>
+                        </label>
+                        
+                        <label style="display: block; padding: 15px; margin-bottom: 10px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer;">
+                            <input type="radio" name="gratitude" value="오늘도 좋은 가치 제공했습니다!" style="margin-right: 10px;">
+                            <span>오늘도 좋은 가치 제공했습니다!</span>
+                        </label>
+                        
+                        <label style="display: block; padding: 15px; margin-bottom: 10px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer;">
+                            <input type="radio" name="gratitude" value="충분히 받을 자격이 있습니다" style="margin-right: 10px;">
+                            <span>충분히 받을 자격이 있습니다</span>
+                        </label>
+                        
+                        <label style="display: block; padding: 15px; margin-bottom: 10px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer;">
+                            <input type="radio" name="gratitude" value="나는 가치있는 사람입니다!" style="margin-right: 10px;">
+                            <span>나는 가치있는 사람입니다!</span>
+                        </label>
+                        
+                        <div style="margin-top: 15px;">
+                            <label style="display: block; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                                <input type="radio" name="gratitude" value="custom" style="margin-right: 10px;">
+                                <span style="font-weight: 600;">✍️ 직접 입력:</span>
+                            </label>
+                            <textarea id="customGratitude" placeholder="나만의 감사 메시지..." style="
+                                width: 100%;
+                                height: 80px;
+                                padding: 15px;
+                                margin-top: 10px;
+                                border: 2px solid #e0e0e0;
+                                border-radius: 10px;
+                                font-size: 1em;
+                                resize: none;
+                            " onclick="document.querySelector('input[value=custom]').checked=true"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="cancelReceive()" style="
+                            flex: 1;
+                            padding: 18px;
+                            background: white;
+                            color: #666;
+                            border: 2px solid #e0e0e0;
+                            border-radius: 12px;
+                            font-size: 1em;
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">취소</button>
+                        
+                        <button onclick="completeReceive()" style="
+                            flex: 2;
+                            padding: 18px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border: none;
+                            border-radius: 12px;
+                            font-size: 1.1em;
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">✨ 감사하며 받기!</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(popup);
+        }
+
+        // 받기 취소
+        function cancelReceive() {
+            const popup = document.querySelector('div[style*="position: fixed"]');
+            if (popup) document.body.removeChild(popup);
+        }
+
+        // 받기 완료
+        function completeReceive() {
+            const selectedRadio = document.querySelector('input[name="gratitude"]:checked');
+            let message = '';
+            
+            if (selectedRadio) {
+                if (selectedRadio.value === 'custom') {
+                    message = document.getElementById('customGratitude').value.trim();
+                } else {
+                    message = selectedRadio.value;
+                }
+            }
+            
+            const amount = data.pending;
+            
+            // pending → received (시즌 누적)
+            data.received += data.pending;
+            data.dailyReceived += data.pending;  // 오늘 추가
+            data.weeklyReceived += data.pending; // 이번주 추가
+            data.pending = 0;
+            
+            // 활동 기록
+            if (message) {
+                addActivity(`🙏 ${amount}만원 수령! "${message}"`);
+            } else {
+                addActivity(`🙏 ${amount}만원 수령!`);
+            }
+            
+            // 레벨 체크
+            checkLevelUp();
+            
+            saveData();
+            updateUI();
+            
+            // 팝업 닫기
+            cancelReceive();
+            
+            // 축하 알림
+            if (message) {
+                setTimeout(() => {
+                    alert(`🎉 감사합니다!\n\n"${message}"\n\n${amount}만원을 수령했습니다!`);
+                }, 300);
+            }
+        }
+
+        // 레벨업 체크
+        function checkLevelUp() {
+            const currentLevel = getCurrentLevel();
+            const nextLevel = levels.find(l => l.threshold > data.received);
+            
+            if (nextLevel && data.received >= nextLevel.threshold) {
+                addActivity(`🎊 레벨업! ${nextLevel.emoji} ${nextLevel.name}`);
+                setTimeout(() => {
+                    alert(`🎊 축하합니다!\n\n${nextLevel.name} Lv.${nextLevel.level} 달성!`);
+                }, 500);
+            }
+        }
+
+        // 현재 레벨 가져오기
+        function getCurrentLevel() {
+            for (let i = levels.length - 1; i >= 0; i--) {
+                if (data.received >= levels[i].threshold) {
+                    return levels[i];
+                }
+            }
+            return levels[0];
+        }
+
+        // 활동 추가
+        function addActivity(text) {
+            const now = new Date();
+            const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            data.activities.unshift({ time, text });
+            if (data.activities.length > 50) data.activities.pop();
+        }
+
+        // UI 업데이트
+        function updateUI() {
+            // 레벨
+            const level = getCurrentLevel();
+            const nextLevel = levels.find(l => l.threshold > data.received) || levels[levels.length - 1];
+            const progress = nextLevel.threshold > 0 
+                ? Math.min(100, (data.received / nextLevel.threshold) * 100)
+                : 100;
+            
+            document.getElementById('levelEmoji').textContent = level.emoji;
+            document.getElementById('levelName').textContent = level.name;
+            document.getElementById('levelNum').textContent = level.level;
+            document.getElementById('levelProgress').style.width = progress + '%';
+            document.getElementById('levelProgress').textContent = Math.round(progress) + '%';
+            document.getElementById('levelNext').textContent = 
+                nextLevel.threshold > data.received 
+                    ? `다음 레벨까지 ${(nextLevel.threshold - data.received).toLocaleString()}만` 
+                    : '최고 레벨 달성!';
+            
+            // 받기 대기
+            document.getElementById('pendingAmount').textContent = data.pending.toLocaleString() + '만원';
+            document.getElementById('receiveBtn').disabled = data.pending === 0;
+            
+            // 통계
+            document.getElementById('dailyReceived').textContent = data.dailyReceived.toLocaleString() + '만';
+            document.getElementById('weeklyReceived').textContent = data.weeklyReceived.toLocaleString() + '만';
+            document.getElementById('receivedTotal').textContent = data.received.toLocaleString() + '만';
+            document.getElementById('givenTotal').textContent = data.given.toLocaleString() + '만';
+            
+            // 일일 미션 (7만원)
+            const dailyGoal = 7;
+            const dailyPercent = Math.min(100, (data.dailyReceived / dailyGoal) * 100);
+            document.getElementById('dailyProgress').style.width = dailyPercent + '%';
+            document.getElementById('dailyStatus').textContent = 
+                data.dailyReceived >= dailyGoal ? '✅ 달성!' : '⏳ 미달성';
+            document.getElementById('dailyStatus').style.color = 
+                data.dailyReceived >= dailyGoal ? '#28a745' : '#999';
+            
+            // 주간 미션 (50만원)
+            const weeklyGoal = 50;
+            const weeklyPercent = Math.min(100, (data.weeklyReceived / weeklyGoal) * 100);
+            document.getElementById('weeklyProgress').style.width = weeklyPercent + '%';
+            document.getElementById('weeklyStatus').textContent = 
+                data.weeklyReceived >= weeklyGoal ? '✅ 달성!' : '⏳ 미달성';
+            document.getElementById('weeklyStatus').style.color = 
+                data.weeklyReceived >= weeklyGoal ? '#28a745' : '#999';
+            
+            // 활동 피드
+            const feed = document.getElementById('activityFeed');
+            if (data.activities.length === 0) {
+                feed.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">아직 활동이 없습니다</div>';
+            } else {
+                feed.innerHTML = data.activities.map(a => `
+                    <div class="activity-item">
+                        <div class="activity-time">${a.time}</div>
+                        <div>${a.text}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // 전체 초기화
+        function resetAll() {
+            if (confirm('정말 전체 데이터를 초기화하시겠습니까?')) {
+                data.pending = 0;
+                data.received = 0;
+                data.given = 0;
+                data.dailyReceived = 0;
+                data.weeklyReceived = 0;
+                data.lastResetDate = new Date().toDateString();
+                data.lastWeekReset = null;
+                data.activities = [];
+                saveData();
+                updateUI();
+                alert('초기화 완료!');
+            }
+        }
+
+        // ========== 사용자 선택 시스템 ==========
+        const USERS = {
+            taewook: { name: '태욱', product: '비즈니스 실행 코칭' },
+            dowan: { name: '도완', product: '유튜브 컨설팅 코칭' },
+            hayeon: { name: '하연', product: '라이프사이클 코칭' },
+            euna: { name: '은아', product: '자본주의 머니 코칭' },
+            ray: { name: '래이', product: '우주머니액팅 코칭' },
+            saerom: { name: '새롬', product: 'CRM 개발 코칭' },
+            jieun: { name: '지은', product: '닐스 기획 코칭' },
+            jinseul: { name: '진슬', product: '스레드 분석기 코칭' }
+        };
+
+        let currentUser = null;
+
+        // 페이지 로드 시 사용자 확인
+        function initializeApp() {
+            // 항상 선택 화면부터 시작
+            showUserSelection();
+        }
+
+        // 사용자 선택 화면 표시
+        function showUserSelection() {
+            document.getElementById('userSelectionScreen').style.display = 'flex';
+            document.getElementById('mainGameScreen').style.display = 'none';
+        }
+
+        // 메인 게임 화면 표시
+        function showMainGame() {
+            document.getElementById('userSelectionScreen').style.display = 'none';
+            document.getElementById('mainGameScreen').style.display = 'block';
+            
+            // 데이터 로드
+            loadUserData();
+        }
+
+        // 사용자 데이터 로드 (기존 loadData를 대체)
+        function loadUserData() {
+            const storageKey = 'tokenGame_' + currentUser;
+            const saved = localStorage.getItem(storageKey);
+            
+            if (saved) {
+                Object.assign(data, JSON.parse(saved));
+            } else {
+                // 초기 데이터
+                data.pending = 0;
+                data.received = 0;
+                data.given = 0;
+                data.dailyReceived = 0;
+                data.weeklyReceived = 0;
+                data.lastResetDate = new Date().toDateString();
+                data.lastWeekReset = null;
+                data.activities = [];
+            }
+            
+            checkDailyReset();
+            checkWeeklyReset();
+            updateUI();
+        }
+
+        // 사용자 데이터 저장 (기존 saveData 수정)
+        function saveUserData() {
+            const storageKey = 'tokenGame_' + currentUser;
+            localStorage.setItem(storageKey, JSON.stringify(data));
+            localStorage.setItem('currentUser', currentUser);
+        }
+
+        // 라디오 버튼 선택 이벤트
+        document.querySelectorAll('input[name="selectedUser"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // 선택된 옵션 스타일 업데이트
+                document.querySelectorAll('.user-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.closest('.user-option').classList.add('selected');
+                
+                // 시작 버튼 활성화
+                document.getElementById('startGameBtn').disabled = false;
+            });
+        });
+
+        // 시작하기 버튼 클릭
+        document.getElementById('startGameBtn').addEventListener('click', function() {
+            const selectedRadio = document.querySelector('input[name="selectedUser"]:checked');
+            
+            if (selectedRadio) {
+                currentUser = selectedRadio.value;
+                localStorage.setItem('currentUser', currentUser);
+                showMainGame();
+            }
+        });
+
+        // 기존 saveData, loadData 함수를 새 함수로 대체
+        function saveData() {
+            saveUserData();
+        }
+
+        function loadData() {
+            if (currentUser) {
+                loadUserData();
+            }
+        }
+
+        // 초기화
+        initializeApp();
+    </script>
+    </div> <!-- 메인 게임 화면 끝 -->
+</body>
+</html>
