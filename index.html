@@ -2,7 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>🪙 가치 토큰 GAME</title>
     <style>
         * {
@@ -131,11 +133,17 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .amount-btn:hover {
             border-color: #667eea;
             background: #f8f9fa;
+        }
+
+        .amount-btn:active {
+            transform: scale(0.95);
         }
 
         .amount-btn.selected {
@@ -155,10 +163,16 @@
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
         }
 
         /* 받기 대기 */
@@ -185,10 +199,16 @@
             font-weight: 600;
             cursor: pointer;
             margin-top: 20px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .receive-btn:hover {
             background: #fff5f7;
+        }
+
+        .receive-btn:active:not(:disabled) {
+            transform: scale(0.98);
         }
 
         .receive-btn:disabled {
@@ -333,6 +353,8 @@
             background: white;
             text-align: center;
             min-height: 100px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .user-option:hover {
@@ -340,6 +362,10 @@
             background: #f8f9fa;
             transform: translateY(-3px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .user-option:active {
+            transform: scale(0.97);
         }
 
         .user-option.selected {
@@ -422,17 +448,163 @@
             display: none;
         }
 
+        /* 모바일 최적화 */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header p {
+                font-size: 0.9em;
+            }
+
+            /* 메인 그리드 - 세로 배치 */
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            /* 카드 패딩 축소 */
+            .card {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .card h2 {
+                font-size: 1.3em;
+                margin-bottom: 15px;
+            }
+
+            /* 레벨 카드 */
+            .level-emoji {
+                font-size: 3em;
+                margin: 15px 0;
+            }
+
+            .level-name {
+                font-size: 1.5em;
+            }
+
+            /* 금액 버튼 - 2열로 */
+            .amount-btns {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .amount-btn {
+                padding: 12px;
+                font-size: 0.95em;
+            }
+
+            /* 입력 필드 */
+            .form-group select,
+            .form-group input {
+                padding: 12px;
+                font-size: 0.95em;
+            }
+
+            /* 버튼 */
+            .submit-btn,
+            .receive-btn,
+            .start-game-btn {
+                padding: 15px;
+                font-size: 1.1em;
+            }
+
+            /* 통계 그리드 - 2열 유지하되 간격 축소 */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 1.5em;
+            }
+
+            /* 활동 피드 */
+            .activity-feed {
+                max-height: 250px;
+            }
+
+            .activity-item {
+                padding: 12px;
+                font-size: 0.9em;
+            }
+
+            /* 받기 대기 */
+            .pending-amount {
+                font-size: 2.5em;
+            }
+
+            /* 게임 설명 */
+            .card[style*="게임 방법"] > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+
+            /* 사용자 선택 화면 */
             .user-selection-card {
                 padding: 30px 20px;
             }
-            
+
             .user-selection-title h1 {
                 font-size: 2em;
             }
-            
+
             .user-selection-subtitle {
                 font-size: 1.5em;
+            }
+
+            /* 팝업 */
+            div[style*="position: fixed"] > div {
+                width: 90% !important;
+                max-width: 90% !important;
+                padding: 25px 20px !important;
+            }
+        }
+
+        /* 작은 모바일 (iPhone SE 등) */
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .card h2 {
+                font-size: 1.2em;
+            }
+
+            .level-emoji {
+                font-size: 2.5em;
+            }
+
+            .level-name {
+                font-size: 1.3em;
+            }
+
+            .pending-amount {
+                font-size: 2em;
+            }
+
+            .submit-btn,
+            .receive-btn {
+                padding: 12px;
+                font-size: 1em;
+            }
+
+            .stat-value {
+                font-size: 1.3em;
             }
         }
     </style>
