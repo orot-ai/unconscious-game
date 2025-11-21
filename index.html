@@ -544,10 +544,14 @@
                 font-size: 2.5em;
             }
 
-            /* 게임 설명 */
-            .card[style*="게임 방법"] > div[style*="grid-template-columns"] {
+            /* 게임 설명 - 세로 배치 */
+            .game-method-grid {
                 grid-template-columns: 1fr !important;
                 gap: 15px !important;
+            }
+
+            .game-method-grid > div {
+                padding: 15px !important;
             }
 
             /* 사용자 선택 화면 */
@@ -569,6 +573,13 @@
                 max-width: 90% !important;
                 padding: 25px 20px !important;
             }
+        }
+
+        /* 게임 방법 그리드 */
+        .game-method-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
         /* 작은 모바일 (iPhone SE 등) */
@@ -687,7 +698,7 @@
         <!-- 게임 설명 -->
         <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);">
             <h2 style="text-align: center; margin-bottom: 20px;">📖 게임 방법</h2>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div class="game-method-grid">
                 <div style="text-align: center; padding: 20px;">
                     <div style="font-size: 3em; margin-bottom: 10px;">🎁</div>
                     <h3 style="color: #667eea; margin-bottom: 10px;">1. 가치 인정하기</h3>
