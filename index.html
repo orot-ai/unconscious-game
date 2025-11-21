@@ -167,38 +167,102 @@
             color: white;
         }
 
-        /* 사람 선택 버튼 */
-        .person-btn {
-            padding: 18px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            text-align: left;
+        /* 커스텀 드롭다운 */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
         }
 
-        .person-btn:hover {
+        .dropdown-selected {
+            padding: 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            font-size: 1.15em;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .dropdown-selected:hover {
             border-color: #667eea;
-            background: #f8f9fa;
-            transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
         }
 
-        .person-btn:active {
-            transform: translateY(0);
+        .dropdown-arrow {
+            transition: transform 0.3s;
+            color: #667eea;
         }
 
-        .person-btn.selected {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .dropdown-selected.active .dropdown-arrow {
+            transform: rotate(180deg);
         }
 
-        .person-btn.selected div {
-            color: white !important;
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            margin-top: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .dropdown-options.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-option {
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option:hover {
+            background: linear-gradient(135deg, #f8f9ff 0%, #fdf8ff 100%);
+        }
+
+        .option-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .option-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .selected-text {
+            color: #333;
         }
 
         .submit-btn {
@@ -556,15 +620,26 @@
                 font-size: 1.05em;
             }
 
-            /* 드롭다운 크기 더 키우기 */
-            .form-group select {
+            /* 커스텀 드롭다운 모바일 */
+            .dropdown-selected {
                 padding: 18px;
-                font-size: 1.1em;
+                font-size: 1.05em;
             }
 
-            .form-group select option {
-                padding: 14px;
+            .dropdown-options {
+                max-height: 300px;
+            }
+
+            .dropdown-option {
+                padding: 14px 16px;
+            }
+
+            .option-name {
                 font-size: 1.05em;
+            }
+
+            .option-desc {
+                font-size: 0.85em;
             }
 
             /* 버튼 */
@@ -854,39 +929,47 @@
                     <div class="form-group">
                         <label>누구의 가치를 인정하시나요?</label>
                         <input type="hidden" id="personSelect">
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                            <button type="button" class="person-btn" onclick="selectPerson('태욱', '비즈니스 실행')">
-                                <div style="font-weight: bold; font-size: 1.1em;">태욱</div>
-                                <div style="font-size: 0.85em; color: #666;">비즈니스 실행</div>
-                            </button>
-                            <button type="button" class="person-btn" onclick="selectPerson('도완', '유튜브 컨설팅')">
-                                <div style="font-weight: bold; font-size: 1.1em;">도완</div>
-                                <div style="font-size: 0.85em; color: #666;">유튜브 컨설팅</div>
-                            </button>
-                            <button type="button" class="person-btn" onclick="selectPerson('하연', '라이프사이클')">
-                                <div style="font-weight: bold; font-size: 1.1em;">하연</div>
-                                <div style="font-size: 0.85em; color: #666;">라이프사이클</div>
-                            </button>
-                            <button type="button" class="person-btn" onclick="selectPerson('은아', '자본주의 머니')">
-                                <div style="font-weight: bold; font-size: 1.1em;">은아</div>
-                                <div style="font-size: 0.85em; color: #666;">자본주의 머니</div>
-                            </button>
-                            <button type="button" class="person-btn" onclick="selectPerson('래이', '우주머니액팅')">
-                                <div style="font-weight: bold; font-size: 1.1em;">래이</div>
-                                <div style="font-size: 0.85em; color: #666;">우주머니액팅</div>
-                            </button>
-                            <button type="button" class="person-btn" onclick="selectPerson('새롬', 'CRM 개발')">
-                                <div style="font-weight: bold; font-size: 1.1em;">새롬</div>
-                                <div style="font-size: 0.85em; color: #666;">CRM 개발</div>
-                            </button>
-                            <button type="button" class="person-btn" onclick="selectPerson('지은', '릴스 기획')">
-                                <div style="font-weight: bold; font-size: 1.1em;">지은</div>
-                                <div style="font-size: 0.85em; color: #666;">릴스 기획</div>
-                            </button>
-                            <button type="button" class="person-btn" onclick="selectPerson('진슬', '스레드 분석기')">
-                                <div style="font-weight: bold; font-size: 1.1em;">진슬</div>
-                                <div style="font-size: 0.85em; color: #666;">스레드 분석기</div>
-                            </button>
+                        <div class="custom-dropdown">
+                            <div class="dropdown-selected" onclick="toggleDropdown()">
+                                <span class="selected-text">선택하세요</span>
+                                <svg class="dropdown-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="dropdown-options" id="dropdownOptions">
+                                <div class="dropdown-option" onclick="selectDropdownOption('태욱', '태욱 - 비즈니스 실행 코칭')">
+                                    <div class="option-name">태욱</div>
+                                    <div class="option-desc">비즈니스 실행 코칭</div>
+                                </div>
+                                <div class="dropdown-option" onclick="selectDropdownOption('도완', '도완 - 유튜브 컨설팅 코칭')">
+                                    <div class="option-name">도완</div>
+                                    <div class="option-desc">유튜브 컨설팅 코칭</div>
+                                </div>
+                                <div class="dropdown-option" onclick="selectDropdownOption('하연', '하연 - 라이프사이클 코칭')">
+                                    <div class="option-name">하연</div>
+                                    <div class="option-desc">라이프사이클 코칭</div>
+                                </div>
+                                <div class="dropdown-option" onclick="selectDropdownOption('은아', '은아 - 자본주의 머니 코칭')">
+                                    <div class="option-name">은아</div>
+                                    <div class="option-desc">자본주의 머니 코칭</div>
+                                </div>
+                                <div class="dropdown-option" onclick="selectDropdownOption('래이', '래이 - 우주머니액팅 코칭')">
+                                    <div class="option-name">래이</div>
+                                    <div class="option-desc">우주머니액팅 코칭</div>
+                                </div>
+                                <div class="dropdown-option" onclick="selectDropdownOption('새롬', '새롬 - CRM 개발 코칭')">
+                                    <div class="option-name">새롬</div>
+                                    <div class="option-desc">CRM 개발 코칭</div>
+                                </div>
+                                <div class="dropdown-option" onclick="selectDropdownOption('지은', '지은 - 릴스 기획 코칭')">
+                                    <div class="option-name">지은</div>
+                                    <div class="option-desc">릴스 기획 코칭</div>
+                                </div>
+                                <div class="dropdown-option" onclick="selectDropdownOption('진슬', '진슬 - 스레드 분석기 코칭')">
+                                    <div class="option-name">진슬</div>
+                                    <div class="option-desc">스레드 분석기 코칭</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1101,12 +1184,30 @@
             }
         }
 
-        // 사람 선택
-        function selectPerson(name, product) {
-            document.getElementById('personSelect').value = name;
-            document.querySelectorAll('.person-btn').forEach(btn => btn.classList.remove('selected'));
-            event.target.closest('.person-btn').classList.add('selected');
+        // 커스텀 드롭다운 토글
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownOptions');
+            const selected = document.querySelector('.dropdown-selected');
+            dropdown.classList.toggle('show');
+            selected.classList.toggle('active');
         }
+
+        // 드롭다운 옵션 선택
+        function selectDropdownOption(value, displayText) {
+            document.getElementById('personSelect').value = value;
+            document.querySelector('.selected-text').textContent = displayText;
+            document.getElementById('dropdownOptions').classList.remove('show');
+            document.querySelector('.dropdown-selected').classList.remove('active');
+        }
+
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.custom-dropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                document.getElementById('dropdownOptions').classList.remove('show');
+                document.querySelector('.dropdown-selected').classList.remove('active');
+            }
+        });
 
         // 금액 선택
         function selectAmount(amount) {
