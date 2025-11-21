@@ -167,6 +167,40 @@
             color: white;
         }
 
+        /* 사람 선택 버튼 */
+        .person-btn {
+            padding: 18px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            text-align: left;
+        }
+
+        .person-btn:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .person-btn:active {
+            transform: translateY(0);
+        }
+
+        .person-btn.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .person-btn.selected div {
+            color: white !important;
+        }
+
         .submit-btn {
             width: 100%;
             padding: 20px;
@@ -819,17 +853,41 @@
                 <form class="token-form" onsubmit="issueToken(event)">
                     <div class="form-group">
                         <label>누구의 가치를 인정하시나요?</label>
-                        <select id="personSelect" style="padding: 20px !important; font-size: 1.2em !important; line-height: 1.6 !important; height: auto !important;">
-                            <option value="" style="padding: 15px; font-size: 1.1em;">선택하세요</option>
-                            <option value="태욱" style="padding: 15px; font-size: 1.1em;">태욱 - 비즈니스 실행 코칭</option>
-                            <option value="도완" style="padding: 15px; font-size: 1.1em;">도완 - 유튜브 컨설팅 코칭</option>
-                            <option value="하연" style="padding: 15px; font-size: 1.1em;">하연 - 라이프사이클 코칭</option>
-                            <option value="은아" style="padding: 15px; font-size: 1.1em;">은아 - 자본주의 머니 코칭</option>
-                            <option value="래이" style="padding: 15px; font-size: 1.1em;">래이 - 우주머니액팅 코칭</option>
-                            <option value="새롬" style="padding: 15px; font-size: 1.1em;">새롬 - CRM 개발 코칭</option>
-                            <option value="지은" style="padding: 15px; font-size: 1.1em;">지은 - 닐스 기획 코칭</option>
-                            <option value="진슬" style="padding: 15px; font-size: 1.1em;">진슬 - 스레드 분석기 코칭</option>
-                        </select>
+                        <input type="hidden" id="personSelect">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                            <button type="button" class="person-btn" onclick="selectPerson('태욱', '비즈니스 실행')">
+                                <div style="font-weight: bold; font-size: 1.1em;">태욱</div>
+                                <div style="font-size: 0.85em; color: #666;">비즈니스 실행</div>
+                            </button>
+                            <button type="button" class="person-btn" onclick="selectPerson('도완', '유튜브 컨설팅')">
+                                <div style="font-weight: bold; font-size: 1.1em;">도완</div>
+                                <div style="font-size: 0.85em; color: #666;">유튜브 컨설팅</div>
+                            </button>
+                            <button type="button" class="person-btn" onclick="selectPerson('하연', '라이프사이클')">
+                                <div style="font-weight: bold; font-size: 1.1em;">하연</div>
+                                <div style="font-size: 0.85em; color: #666;">라이프사이클</div>
+                            </button>
+                            <button type="button" class="person-btn" onclick="selectPerson('은아', '자본주의 머니')">
+                                <div style="font-weight: bold; font-size: 1.1em;">은아</div>
+                                <div style="font-size: 0.85em; color: #666;">자본주의 머니</div>
+                            </button>
+                            <button type="button" class="person-btn" onclick="selectPerson('래이', '우주머니액팅')">
+                                <div style="font-weight: bold; font-size: 1.1em;">래이</div>
+                                <div style="font-size: 0.85em; color: #666;">우주머니액팅</div>
+                            </button>
+                            <button type="button" class="person-btn" onclick="selectPerson('새롬', 'CRM 개발')">
+                                <div style="font-weight: bold; font-size: 1.1em;">새롬</div>
+                                <div style="font-size: 0.85em; color: #666;">CRM 개발</div>
+                            </button>
+                            <button type="button" class="person-btn" onclick="selectPerson('지은', '릴스 기획')">
+                                <div style="font-weight: bold; font-size: 1.1em;">지은</div>
+                                <div style="font-size: 0.85em; color: #666;">릴스 기획</div>
+                            </button>
+                            <button type="button" class="person-btn" onclick="selectPerson('진슬', '스레드 분석기')">
+                                <div style="font-weight: bold; font-size: 1.1em;">진슬</div>
+                                <div style="font-size: 0.85em; color: #666;">스레드 분석기</div>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -1041,6 +1099,13 @@
                 data.lastWeekReset = weekKey;
                 saveData();
             }
+        }
+
+        // 사람 선택
+        function selectPerson(name, product) {
+            document.getElementById('personSelect').value = name;
+            document.querySelectorAll('.person-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.closest('.person-btn').classList.add('selected');
         }
 
         // 금액 선택
