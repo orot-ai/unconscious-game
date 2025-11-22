@@ -6,6 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>🪙 가치 토큰 GAME</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         * {
             margin: 0;
@@ -1108,7 +1112,7 @@
                 <div style="height: 2px; background: linear-gradient(90deg, transparent, #e0e0e0, transparent); margin: 30px 0;"></div>
                 
                 <!-- 기여 순위 -->
-                <h2>🏆 기여 순위 (이번주)</h2>
+                <h2>🏆 기여 순위 (누적)</h2>
                 <div id="rankingList" style="margin-top: 15px;">
                     <!-- 동적으로 생성 -->
                 </div>
@@ -1117,6 +1121,11 @@
     </div>
 
     <script>
+        // Supabase 초기화
+        const SUPABASE_URL = 'https://xcnzbbmdhjdldzzypcuf.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjbnpiYm1kaGpkbGR6enlwY3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3Nzk4ODUsImV4cCI6MjA3OTM1NTg4NX0.xzi3soufSgsXHJkpQkeVfJROut6YsDotejjkUMuD3GM';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         // 데이터 구조
         const data = {
             pending: 0,      // 받기 대기 (총액)
@@ -1229,14 +1238,14 @@
             document.getElementById('valueNote').focus();
         }
 
-        // 토큰 발행 (가치 인정)
-        function issueToken(event) {
+        // 토큰 발행 (가치 인정) - Supabase
+        async function issueToken(event) {
             event.preventDefault();
-            
+
             const person = document.getElementById('personSelect').value;
             const customAmount = parseInt(document.getElementById('customAmount').value) || 0;
             const amount = customAmount || selectedAmount;
-            const valueNote = document.getElementById('valueNote').value.trim(); // 메모 가져오기
+            const valueNote = document.getElementById('valueNote').value.trim();
 
             if (!person) {
                 alert('사람을 선택해주세요!');
@@ -1248,13 +1257,12 @@
                 return;
             }
 
-            // 1건당 10만원 상한
             if (amount > 10) {
                 alert('1건당 최대 10만원까지 발행할 수 있습니다!');
                 return;
             }
 
-            // 상대방의 ID 찾기 (person은 한글 이름)
+            // 상대방의 ID 찾기
             let targetUserId = null;
             for (let userId in USERS) {
                 if (USERS[userId].name === person) {
@@ -1268,58 +1276,59 @@
                 return;
             }
 
-            // 상대방 데이터 로드
-            const targetStorageKey = 'tokenGame_' + targetUserId;
-            let targetData = JSON.parse(localStorage.getItem(targetStorageKey)) || {
-                pending: 0,
-                pendingList: [],
-                received: 0,
-                given: 0,
-                dailyReceived: 0,
-                weeklyReceived: 0,
-                lastResetDate: new Date().toDateString(),
-                lastWeekReset: null,
-                activities: []
-            };
+            try {
+                // 1. 상대방에게 pending_token 추가
+                const { error: tokenError } = await supabase
+                    .from('pending_tokens')
+                    .insert([{
+                        to_user_id: targetUserId,
+                        from_user_id: currentUser,
+                        from_name: USERS[currentUser].name,
+                        amount: amount,
+                        note: valueNote
+                    }]);
 
-            // pendingList 초기화 (없으면)
-            if (!targetData.pendingList) {
-                targetData.pendingList = [];
+                if (tokenError) throw tokenError;
+
+                // 2. 상대방 pending 증가
+                const { data: targetData, error: targetError } = await supabase
+                    .from('user_data')
+                    .select('pending')
+                    .eq('user_id', targetUserId)
+                    .single();
+
+                if (targetError) throw targetError;
+
+                const { error: updateError } = await supabase
+                    .from('user_data')
+                    .update({ pending: (targetData.pending || 0) + amount })
+                    .eq('user_id', targetUserId);
+
+                if (updateError) throw updateError;
+
+                // 3. 내 given 증가
+                data.given += amount;
+                data.weeklyGiven += amount;
+
+                // 4. 활동 기록
+                await addActivity(`${person}님에게 ${amount}만원 가치 인정!`);
+
+                await saveUserData();
+                updateUI();
+
+                // 폼 초기화
+                document.getElementById('personSelect').value = '';
+                document.querySelector('.selected-text').textContent = '선택하세요';
+                document.getElementById('customAmount').value = '';
+                document.getElementById('valueNote').value = '';
+                selectedAmount = 0;
+                document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('selected'));
+
+                alert(`${person}님에게 ${amount}만원 가치 인정 완료! 🎉`);
+            } catch (error) {
+                console.error('토큰 발행 실패:', error);
+                alert('토큰 발행 중 오류가 발생했습니다.');
             }
-
-            // 상대방의 pending 증가
-            targetData.pending += amount;
-            
-            // pendingList에 추가 (메모 포함)
-            targetData.pendingList.push({
-                from: currentUser,
-                fromName: USERS[currentUser].name,
-                amount: amount,
-                note: valueNote || '' // 메모 저장
-            });
-
-            // 상대방 데이터 저장
-            localStorage.setItem(targetStorageKey, JSON.stringify(targetData));
-
-            // 내 given 증가
-            data.given += amount;
-            data.weeklyGiven += amount; // 주간 기여도 증가
-            
-            // 활동 기록
-            addActivity(`${person}님에게 ${amount}만원 가치 인정!`);
-            
-            saveData();
-            updateUI();
-            
-            // 폼 초기화
-            document.getElementById('personSelect').value = '';
-            document.getElementById('customAmount').value = '';
-            document.getElementById('valueNote').value = '';
-            document.querySelectorAll('input[name="valueOption"]').forEach(radio => radio.checked = false); // 라디오 버튼 초기화
-            selectedAmount = 0;
-            document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('selected'));
-            
-            alert(`${person}님에게 ${amount}만원 가치 인정 완료! 🎉`);
         }
 
         // 받기 확인 팝업
@@ -1826,16 +1835,16 @@
         // 기여 순위 업데이트
         function updateRanking() {
             const rankings = [];
-            
-            // 모든 사용자의 weeklyReceived 수집 (가장 많이 받은 = 가장 많이 기여)
+
+            // 모든 사용자의 received 수집 (누적 - 가장 많이 받은 = 가장 많이 기여)
             Object.keys(USERS).forEach(userId => {
                 const storageKey = 'tokenGame_' + userId;
                 const userData = JSON.parse(localStorage.getItem(storageKey));
-                
+
                 rankings.push({
                     userId: userId,
                     name: USERS[userId].name,
-                    contribution: userData ? (userData.weeklyReceived || 0) : 0
+                    contribution: userData ? (userData.received || 0) : 0
                 });
             });
             
@@ -1949,46 +1958,88 @@
             loadUserData();
         }
 
-        // 사용자 데이터 로드 (기존 loadData를 대체)
-        function loadUserData() {
-            const storageKey = 'tokenGame_' + currentUser;
-            const saved = localStorage.getItem(storageKey);
-            
-            if (saved) {
-                Object.assign(data, JSON.parse(saved));
-                
-                // pendingList가 없으면 초기화
-                if (!data.pendingList) {
-                    data.pendingList = [];
-                }
-                // weeklyGiven이 없으면 초기화
-                if (data.weeklyGiven === undefined) {
-                    data.weeklyGiven = 0;
-                }
-            } else {
-                // 초기 데이터
-                data.pending = 0;
-                data.pendingList = [];
-                data.received = 0;
-                data.given = 0;
-                data.weeklyGiven = 0;
-                data.dailyReceived = 0;
-                data.weeklyReceived = 0;
-                data.lastResetDate = new Date().toDateString();
-                data.lastWeekReset = null;
-                data.activities = [];
+        // 사용자 데이터 로드 (Supabase)
+        async function loadUserData() {
+            try {
+                // user_data 가져오기
+                const { data: userData, error: userError } = await supabase
+                    .from('user_data')
+                    .select('*')
+                    .eq('user_id', currentUser)
+                    .single();
+
+                if (userError) throw userError;
+
+                // pending_tokens 가져오기
+                const { data: pendingData, error: pendingError } = await supabase
+                    .from('pending_tokens')
+                    .select('*')
+                    .eq('to_user_id', currentUser);
+
+                if (pendingError) throw pendingError;
+
+                // activities 가져오기
+                const { data: activitiesData, error: activitiesError } = await supabase
+                    .from('activities')
+                    .select('*')
+                    .eq('user_id', currentUser)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (activitiesError) throw activitiesError;
+
+                // 데이터 매핑
+                data.pending = userData.pending || 0;
+                data.received = userData.received || 0;
+                data.given = userData.given || 0;
+                data.weeklyGiven = userData.weekly_given || 0;
+                data.dailyReceived = userData.daily_received || 0;
+                data.weeklyReceived = userData.weekly_received || 0;
+                data.lastResetDate = userData.last_reset_date;
+                data.lastWeekReset = userData.last_week_reset;
+
+                // pending list 변환
+                data.pendingList = pendingData.map(p => ({
+                    from: p.from_user_id,
+                    fromName: p.from_name,
+                    amount: p.amount,
+                    note: p.note || ''
+                }));
+
+                // activities 변환
+                data.activities = activitiesData.map(a => a.message);
+
+                checkDailyReset();
+                checkWeeklyReset();
+                updateUI();
+            } catch (error) {
+                console.error('데이터 로드 실패:', error);
+                alert('데이터 로드 중 오류가 발생했습니다.');
             }
-            
-            checkDailyReset();
-            checkWeeklyReset();
-            updateUI();
         }
 
-        // 사용자 데이터 저장 (기존 saveData 수정)
-        function saveUserData() {
-            const storageKey = 'tokenGame_' + currentUser;
-            localStorage.setItem(storageKey, JSON.stringify(data));
-            localStorage.setItem('currentUser', currentUser);
+        // 사용자 데이터 저장 (Supabase)
+        async function saveUserData() {
+            try {
+                const { error } = await supabase
+                    .from('user_data')
+                    .update({
+                        pending: data.pending,
+                        received: data.received,
+                        given: data.given,
+                        weekly_given: data.weeklyGiven,
+                        daily_received: data.dailyReceived,
+                        weekly_received: data.weeklyReceived,
+                        last_reset_date: data.lastResetDate,
+                        last_week_reset: data.lastWeekReset,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', currentUser);
+
+                if (error) throw error;
+            } catch (error) {
+                console.error('데이터 저장 실패:', error);
+            }
         }
 
         // 라디오 버튼 선택 이벤트
