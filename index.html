@@ -391,18 +391,6 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* 초기화 버튼 */
-        .reset-btn {
-            padding: 10px 20px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-top: 20px;
-        }
-
         /* 사용자 선택 화면 스타일 */
         .user-selection-screen {
             position: fixed;
@@ -893,16 +881,16 @@
                     <div class="level-progress">
                         <div class="level-progress-bar" id="levelProgress">0%</div>
                     </div>
-                    <div id="levelNext">다음 레벨까지 100만</div>
+                    <div id="levelNext">다음 레벨까지 100만원</div>
                     
                     <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 10px; font-size: 0.9em; text-align: left;">
                         <div style="font-weight: 600; margin-bottom: 10px; text-align: center;">📊 레벨 구간</div>
                         <div style="line-height: 1.8;">
-                            🌱 Lv.1: 0~100만<br>
-                            🌿 Lv.2: 100~300만<br>
-                            🌳 Lv.3: 300~500만<br>
-                            💼 Lv.4: 500~1,000만<br>
-                            👑 Lv.5: 1,000만 달성!
+                            🌱 Lv.1: 0~100만원<br>
+                            🌿 Lv.2: 100~300만원<br>
+                            🌳 Lv.3: 300~500만원<br>
+                            💼 Lv.4: 500~1,000만원<br>
+                            👑 Lv.5: 1,000만원 달성!
                         </div>
                     </div>
                 </div>
@@ -1063,14 +1051,13 @@
                     <h2 style="margin-top: 30px;">🎯 이번주 미션</h2>
                     <div style="background: #f0f7ff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea;">
                         <p style="color: #667eea; font-size: 0.95em; margin: 0; line-height: 1.6;">
-                            <strong>기준:</strong> 일평균 7만원 × 7일 = 주 50만원 | 주 50만원 × 16주 = 시즌 800만원<br>
-                            꾸준히 하면 1,000만원 달성할 수 있습니다!
+                            <strong>기준:</strong> 일평균 10만원 × 7일 = 주 70만원 | 주 70만원 × 16주 = 시즌 1,120만원
                         </p>
                     </div>
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
                         <div style="margin-bottom: 15px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <span style="font-weight: 600;">📅 일일 최소 목표: 7만원</span>
+                                <span style="font-weight: 600;">📅 일일 최소 목표: 10만원</span>
                                 <span id="dailyStatus" style="font-weight: 600;">미달성</span>
                             </div>
                             <div style="background: #e0e0e0; height: 10px; border-radius: 5px; overflow: hidden;">
@@ -1080,7 +1067,7 @@
                         
                         <div>
                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <span style="font-weight: 600;">📆 주간 최소 목표: 50만원</span>
+                                <span style="font-weight: 600;">📆 주간 최소 목표: 70만원</span>
                                 <span id="weeklyStatus" style="font-weight: 600;">미달성</span>
                             </div>
                             <div style="background: #e0e0e0; height: 10px; border-radius: 5px; overflow: hidden;">
@@ -1095,8 +1082,6 @@
                         <div class="stat-value" id="givenTotal">0만</div>
                     </div>
                 </div>
-
-                <button class="reset-btn" onclick="resetAll()">🔄 전체 초기화</button>
             </div>
 
             <!-- 실시간 활동 & 기여 순위 -->
@@ -1112,7 +1097,21 @@
                 <div style="height: 2px; background: linear-gradient(90deg, transparent, #e0e0e0, transparent); margin: 30px 0;"></div>
                 
                 <!-- 기여 순위 -->
-                <h2>🏆 기여 순위 (누적)</h2>
+                <h2>🏆 기여 순위</h2>
+
+                <!-- 탭 메뉴 -->
+                <div style="display: flex; gap: 10px; margin: 15px 0; border-bottom: 2px solid #e0e0e0;">
+                    <button id="tabWeekly" class="rank-tab active" onclick="switchRankTab('weekly')" style="flex: 1; padding: 12px; border: none; background: none; cursor: pointer; font-weight: 600; color: #667eea; border-bottom: 3px solid #667eea; transition: all 0.3s;">
+                        📆 주간
+                    </button>
+                    <button id="tabMonthly" class="rank-tab" onclick="switchRankTab('monthly')" style="flex: 1; padding: 12px; border: none; background: none; cursor: pointer; font-weight: 600; color: #999; border-bottom: 3px solid transparent; transition: all 0.3s;">
+                        📅 월간
+                    </button>
+                    <button id="tabTotal" class="rank-tab" onclick="switchRankTab('total')" style="flex: 1; padding: 12px; border: none; background: none; cursor: pointer; font-weight: 600; color: #999; border-bottom: 3px solid transparent; transition: all 0.3s;">
+                        🏆 누적
+                    </button>
+                </div>
+
                 <div id="rankingList" style="margin-top: 15px;">
                     <!-- 동적으로 생성 -->
                 </div>
@@ -1140,6 +1139,9 @@
             activities: []
         };
 
+        // 현재 선택된 랭킹 기간
+        let currentRankPeriod = 'weekly';
+
         const levels = [
             { threshold: 0, name: '새싹 코치', emoji: '🌱', level: 1 },
             { threshold: 100, name: '성장 코치', emoji: '🌿', level: 2 },
@@ -1161,37 +1163,10 @@
             if (saved) {
                 Object.assign(data, JSON.parse(saved));
             }
-            checkDailyReset();
-            checkWeeklyReset();
             updateUI();
         }
 
-        // 일일 리셋 체크
-        function checkDailyReset() {
-            const today = new Date().toDateString();
-            if (data.lastResetDate !== today) {
-                data.dailyReceived = 0;
-                data.lastResetDate = today;
-                saveData();
-            }
-        }
-
-        // 주간 리셋 체크 (월요일 기준)
-        function checkWeeklyReset() {
-            const now = new Date();
-            const dayOfWeek = now.getDay(); // 0=일요일
-            const startOfWeek = new Date(now);
-            startOfWeek.setDate(now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // 월요일
-            startOfWeek.setHours(0, 0, 0, 0);
-            const weekKey = startOfWeek.toISOString().split('T')[0];
-            
-            if (data.lastWeekReset !== weekKey) {
-                data.weeklyReceived = 0;
-                data.weeklyGiven = 0; // 주간 기여도 리셋
-                data.lastWeekReset = weekKey;
-                saveData();
-            }
-        }
+        // 클라이언트 리셋 함수 제거됨 (서버에서 자동 처리)
 
         // 커스텀 드롭다운 토글
         function toggleDropdown() {
@@ -1355,9 +1330,10 @@
             popup.innerHTML = `
                 <div style="
                     background: white;
-                    padding: 30px 25px;
+                    padding: 30px 35px;
                     border-radius: 20px;
-                    max-width: 550px;
+                    width: 90%;
+                    max-width: 650px;
                     max-height: 85vh;
                     overflow-y: auto;
                     text-align: center;
@@ -1486,9 +1462,10 @@
             popup.innerHTML = `
                 <div style="
                     background: white;
-                    padding: 30px 25px;
+                    padding: 30px 35px;
                     border-radius: 20px;
-                    max-width: 550px;
+                    width: 90%;
+                    max-width: 650px;
                     max-height: 85vh;
                     overflow-y: auto;
                     text-align: center;
@@ -1583,13 +1560,13 @@
         }
 
         // 개별 받기 완료
-        function completeReceiveSingle(index) {
+        async function completeReceiveSingle(index) {
             const item = data.pendingList[index];
             if (!item) return;
-            
+
             const selectedRadio = document.querySelector('input[name="gratitude"]:checked');
             let message = '';
-            
+
             if (selectedRadio) {
                 if (selectedRadio.value === 'custom') {
                     message = document.getElementById('customGratitude').value.trim();
@@ -1597,48 +1574,51 @@
                     message = selectedRadio.value;
                 }
             }
-            
+
             const amount = item.amount;
             const fromName = item.fromName;
-            
-            // 해당 항목만 받기 처리
-            data.received += amount;
-            data.dailyReceived += amount;
-            data.weeklyReceived += amount;
-            data.pending -= amount;
-            
-            // 목록에서 제거
-            data.pendingList.splice(index, 1);
-            
-            // 활동 기록
-            if (message) {
-                addActivity(`🙏 ${fromName}님께 받은 ${amount}만원 수령! "${message}"`);
-            } else {
-                addActivity(`🙏 ${fromName}님께 받은 ${amount}만원 수령!`);
-            }
-            
-            // 레벨 체크
-            checkLevelUp();
-            
-            saveData();
-            updateUI();
-            
-            // 팝업 닫기
-            cancelReceive();
-            
-            // 축하 알림
-            if (message) {
-                setTimeout(() => {
-                    alert(`🎉 감사합니다!\n\n"${message}"\n\n${amount}만원을 수령했습니다!`);
-                }, 300);
+            const tokenId = item.id; // pending_tokens 테이블의 id
+
+            try {
+                // 데이터베이스 함수 호출 (모든 처리를 서버에서)
+                const { data: result, error } = await supabase
+                    .rpc('accept_pending_token', { p_token_id: tokenId });
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!result.success) {
+                    throw new Error(result.error || '받기 처리 실패');
+                }
+
+                // 로컬 데이터 갱신
+                await loadUserData(data.userId);
+
+                // 팝업 닫기
+                cancelReceive();
+
+                // 축하 알림
+                if (message) {
+                    setTimeout(() => {
+                        alert(`🎉 감사합니다!\n\n"${message}"\n\n${amount}만원을 수령했습니다!`);
+                    }, 300);
+                } else {
+                    setTimeout(() => {
+                        alert(`🎉 ${amount}만원을 수령했습니다!`);
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('받기 처리 오류:', error);
+                alert('받기 처리 중 오류가 발생했습니다.');
             }
         }
 
         // 전체 받기 완료
-        function completeReceive() {
+        async function completeReceive() {
             const selectedRadio = document.querySelector('input[name="gratitude"]:checked');
             let message = '';
-            
+
             if (selectedRadio) {
                 if (selectedRadio.value === 'custom') {
                     message = document.getElementById('customGratitude').value.trim();
@@ -1646,37 +1626,41 @@
                     message = selectedRadio.value;
                 }
             }
-            
+
             const amount = data.pending;
-            
-            // pending → received (시즌 누적)
-            data.received += data.pending;
-            data.dailyReceived += data.pending;  // 오늘 추가
-            data.weeklyReceived += data.pending; // 이번주 추가
-            data.pending = 0;
-            data.pendingList = []; // 목록 초기화
-            
-            // 활동 기록
-            if (message) {
-                addActivity(`🙏 ${amount}만원 수령! "${message}"`);
-            } else {
-                addActivity(`🙏 ${amount}만원 수령!`);
-            }
-            
-            // 레벨 체크
-            checkLevelUp();
-            
-            saveData();
-            updateUI();
-            
-            // 팝업 닫기
-            cancelReceive();
-            
-            // 축하 알림
-            if (message) {
-                setTimeout(() => {
-                    alert(`🎉 감사합니다!\n\n"${message}"\n\n${amount}만원을 수령했습니다!`);
-                }, 300);
+
+            try {
+                // 데이터베이스 함수 호출 (모든 처리를 서버에서)
+                const { data: result, error } = await supabase
+                    .rpc('accept_all_pending_tokens', { p_user_id: data.userId });
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!result.success) {
+                    throw new Error(result.error || '전체 받기 처리 실패');
+                }
+
+                // 로컬 데이터 갱신
+                await loadUserData(data.userId);
+
+                // 팝업 닫기
+                cancelReceive();
+
+                // 축하 알림
+                if (message) {
+                    setTimeout(() => {
+                        alert(`🎉 감사합니다!\n\n"${message}"\n\n${amount}만원을 수령했습니다!`);
+                    }, 300);
+                } else {
+                    setTimeout(() => {
+                        alert(`🎉 ${amount}만원을 수령했습니다!`);
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('받기 처리 오류:', error);
+                alert('받기 처리 중 오류가 발생했습니다.');
             }
         }
 
@@ -1725,9 +1709,9 @@
             document.getElementById('levelNum').textContent = level.level;
             document.getElementById('levelProgress').style.width = progress + '%';
             document.getElementById('levelProgress').textContent = Math.round(progress) + '%';
-            document.getElementById('levelNext').textContent = 
-                nextLevel.threshold > data.received 
-                    ? `다음 레벨까지 ${(nextLevel.threshold - data.received).toLocaleString()}만` 
+            document.getElementById('levelNext').textContent =
+                nextLevel.threshold > data.received
+                    ? `다음 레벨까지 ${(nextLevel.threshold - data.received).toLocaleString()}만원`
                     : '최고 레벨 달성!';
             
             // 받기 대기
@@ -1740,52 +1724,56 @@
             
             if (data.pendingList && data.pendingList.length > 0) {
                 pendingListContainer.style.display = 'block';
-                
+
                 let listHTML = '';
                 data.pendingList.forEach((item, index) => {
                     const isLast = index === data.pendingList.length - 1;
                     listHTML += `
-                        <div style="color: white; padding: 12px 0; ${!isLast ? 'border-bottom: 1px solid rgba(255,255,255,0.2);' : ''}">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: ${item.note ? '10px' : '0'};">
-                                <div>
-                                    <div>
-                                        <span style="font-size: 0.95em;">• ${item.fromName}님</span>
-                                        <span style="font-weight: 600; font-size: 1.1em; margin-left: 10px;">${item.amount}만원</span>
-                                    </div>
-                                    ${item.note ? `
-                                        <div style="
-                                            margin-top: 8px;
-                                            padding: 10px;
-                                            background: rgba(255,255,255,0.15);
-                                            border-radius: 8px;
-                                            font-size: 0.9em;
-                                            line-height: 1.5;
-                                            max-width: 300px;
-                                        ">
-                                            💬 ${item.note}
-                                        </div>
-                                    ` : ''}
+                        <div style="
+                            color: white;
+                            padding: 10px 0;
+                            ${!isLast ? 'border-bottom: 1px solid rgba(255,255,255,0.2);' : ''}
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        ">
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: ${item.note ? '6px' : '0'};">
+                                    <span style="font-size: 0.9em;">• ${item.fromName}</span>
+                                    <span style="font-weight: 600; font-size: 1em; color: #FFD700;">${item.amount}만원</span>
                                 </div>
-                                <button onclick="showReceiveConfirmSingle(${index})" style="
-                                    background: white;
-                                    color: #667eea;
-                                    border: none;
-                                    padding: 8px 16px;
-                                    border-radius: 8px;
-                                    font-weight: 600;
-                                    cursor: pointer;
-                                    font-size: 0.9em;
-                                    transition: all 0.2s;
-                                    flex-shrink: 0;
-                                    margin-left: 10px;
-                                " onmouseover="this.style.background='#f0f2ff'" onmouseout="this.style.background='white'">
-                                    받기
-                                </button>
+                                ${item.note ? `
+                                    <div style="
+                                        padding: 6px 10px;
+                                        background: rgba(255,255,255,0.1);
+                                        border-radius: 6px;
+                                        font-size: 0.85em;
+                                        line-height: 1.4;
+                                        color: rgba(255,255,255,0.9);
+                                    ">
+                                        💬 ${item.note}
+                                    </div>
+                                ` : ''}
                             </div>
+                            <button onclick="showReceiveConfirmSingle(${index})" style="
+                                background: white;
+                                color: #667eea;
+                                border: none;
+                                padding: 6px 14px;
+                                border-radius: 6px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                font-size: 0.85em;
+                                transition: all 0.2s;
+                                flex-shrink: 0;
+                                white-space: nowrap;
+                            " onmouseover="this.style.background='#f0f2ff'" onmouseout="this.style.background='white'">
+                                받기
+                            </button>
                         </div>
                     `;
                 });
-                
+
                 pendingListDiv.innerHTML = listHTML;
             } else {
                 pendingListContainer.style.display = 'none';
@@ -1797,8 +1785,8 @@
             document.getElementById('receivedTotal').textContent = data.received.toLocaleString() + '만';
             document.getElementById('givenTotal').textContent = data.given.toLocaleString() + '만';
             
-            // 일일 미션 (7만원)
-            const dailyGoal = 7;
+            // 일일 미션 (10만원)
+            const dailyGoal = 10;
             const dailyPercent = Math.min(100, (data.dailyReceived / dailyGoal) * 100);
             document.getElementById('dailyProgress').style.width = dailyPercent + '%';
             document.getElementById('dailyStatus').textContent = 
@@ -1806,8 +1794,8 @@
             document.getElementById('dailyStatus').style.color = 
                 data.dailyReceived >= dailyGoal ? '#28a745' : '#999';
             
-            // 주간 미션 (50만원)
-            const weeklyGoal = 50;
+            // 주간 미션 (70만원)
+            const weeklyGoal = 70;
             const weeklyPercent = Math.min(100, (data.weeklyReceived / weeklyGoal) * 100);
             document.getElementById('weeklyProgress').style.width = weeklyPercent + '%';
             document.getElementById('weeklyStatus').textContent = 
@@ -1832,21 +1820,61 @@
             updateRanking();
         }
 
-        // 기여 순위 업데이트
-        function updateRanking() {
-            const rankings = [];
+        // 랭킹 탭 전환
+        function switchRankTab(period) {
+            currentRankPeriod = period;
 
-            // 모든 사용자의 received 수집 (누적 - 가장 많이 받은 = 가장 많이 기여)
-            Object.keys(USERS).forEach(userId => {
-                const storageKey = 'tokenGame_' + userId;
-                const userData = JSON.parse(localStorage.getItem(storageKey));
-
-                rankings.push({
-                    userId: userId,
-                    name: USERS[userId].name,
-                    contribution: userData ? (userData.received || 0) : 0
-                });
+            // 모든 탭 비활성화
+            document.querySelectorAll('.rank-tab').forEach(tab => {
+                tab.style.color = '#999';
+                tab.style.borderBottom = '3px solid transparent';
             });
+
+            // 선택된 탭 활성화
+            const activeTab = document.getElementById('tab' + period.charAt(0).toUpperCase() + period.slice(1));
+            if (activeTab) {
+                activeTab.style.color = '#667eea';
+                activeTab.style.borderBottom = '3px solid #667eea';
+            }
+
+            // 랭킹 업데이트
+            updateRanking();
+        }
+
+        // 기여 순위 업데이트
+        async function updateRanking() {
+            try {
+                // Supabase에서 모든 사용자 데이터 가져오기
+                const { data: allUsersData, error } = await supabase
+                    .from('user_data')
+                    .select('*');
+
+                if (error) throw error;
+
+                const rankings = [];
+
+                // 모든 사용자의 데이터 수집
+                Object.keys(USERS).forEach(userId => {
+                    const userData = allUsersData.find(u => u.user_id === userId);
+
+                    let contribution = 0;
+                    if (userData) {
+                        // 기간에 따라 다른 값 사용
+                        if (currentRankPeriod === 'weekly') {
+                            contribution = userData.weekly_received || 0;
+                        } else if (currentRankPeriod === 'monthly') {
+                            contribution = userData.monthly_received || 0;
+                        } else { // total
+                            contribution = userData.received || 0;
+                        }
+                    }
+
+                    rankings.push({
+                        userId: userId,
+                        name: USERS[userId].name,
+                        contribution: contribution
+                    });
+                });
             
             // 내림차순 정렬
             rankings.sort((a, b) => b.contribution - a.contribution);
@@ -1900,28 +1928,15 @@
                     </div>
                 `;
             });
-            
-            rankingList.innerHTML = html;
-        }
 
-        // 전체 초기화
-        function resetAll() {
-            if (confirm('정말 전체 데이터를 초기화하시겠습니까?')) {
-                data.pending = 0;
-                data.pendingList = [];
-                data.received = 0;
-                data.given = 0;
-                data.weeklyGiven = 0;
-                data.dailyReceived = 0;
-                data.weeklyReceived = 0;
-                data.lastResetDate = new Date().toDateString();
-                data.lastWeekReset = null;
-                data.activities = [];
-                saveData();
-                updateUI();
-                alert('초기화 완료!');
+            rankingList.innerHTML = html;
+            } catch (error) {
+                console.error('랭킹 로드 실패:', error);
+                const rankingList = document.getElementById('rankingList');
+                rankingList.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">랭킹 로드 중 오류가 발생했습니다.</div>';
             }
         }
+
 
         // ========== 사용자 선택 시스템 ==========
         const USERS = {
@@ -1961,14 +1976,17 @@
         // 사용자 데이터 로드 (Supabase)
         async function loadUserData() {
             try {
-                // user_data 가져오기
+                // 서버에서 자동 리셋 체크 및 user_data 가져오기
                 const { data: userData, error: userError } = await supabase
-                    .from('user_data')
-                    .select('*')
-                    .eq('user_id', currentUser)
-                    .single();
+                    .rpc('check_and_reset_periods', { p_user_id: currentUser });
 
                 if (userError) throw userError;
+
+                // pending 금액 실시간 계산
+                const { data: pendingAmount, error: pendingError1 } = await supabase
+                    .rpc('get_pending_amount', { p_user_id: currentUser });
+
+                if (pendingError1) throw pendingError1;
 
                 // pending_tokens 가져오기
                 const { data: pendingData, error: pendingError } = await supabase
@@ -1988,18 +2006,19 @@
 
                 if (activitiesError) throw activitiesError;
 
-                // 데이터 매핑
-                data.pending = userData.pending || 0;
+                // 데이터 매핑 (v2 스키마)
+                data.pending = pendingAmount || 0;
                 data.received = userData.received || 0;
                 data.given = userData.given || 0;
                 data.weeklyGiven = userData.weekly_given || 0;
                 data.dailyReceived = userData.daily_received || 0;
                 data.weeklyReceived = userData.weekly_received || 0;
-                data.lastResetDate = userData.last_reset_date;
-                data.lastWeekReset = userData.last_week_reset;
+                data.monthlyReceived = userData.monthly_received || 0;
+                data.monthlyGiven = userData.monthly_given || 0;
 
                 // pending list 변환
                 data.pendingList = pendingData.map(p => ({
+                    id: p.id,  // Supabase의 UUID 추가
                     from: p.from_user_id,
                     fromName: p.from_name,
                     amount: p.amount,
@@ -2009,8 +2028,6 @@
                 // activities 변환
                 data.activities = activitiesData.map(a => a.message);
 
-                checkDailyReset();
-                checkWeeklyReset();
                 updateUI();
             } catch (error) {
                 console.error('데이터 로드 실패:', error);
